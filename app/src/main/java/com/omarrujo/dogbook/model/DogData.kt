@@ -11,9 +11,9 @@ data class Breed(
     val height: Height,
     val id: Int,
     val name: String,
-    val bredFor: String,
-    val breedGroup: String,
-    val lifeSpan: String,
+    val bred_for: String,
+    val breed_group: String,
+    val life_span: String,
     val temperament: String,
     val reference_image_id: String
 )

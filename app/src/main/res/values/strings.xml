@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">DogBook</string>
+    <string name="no_name">No Name</string>
+    <string name="bred">are bred for</string>
+    <string name="breed_group">their breed group are</string>
+    <string name="life">and their life expectancy is</string>
 </resources>
