@@ -1,6 +1,6 @@
 package com.omarrujo.dogbook.repository
 
-import DogData
+import com.omarrujo.dogbook.model.DogData
 import com.omarrujo.dogbook.utils.Constants
 import retrofit2.Call
 import retrofit2.http.GET

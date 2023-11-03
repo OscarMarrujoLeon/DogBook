@@ -1,7 +1,15 @@
 <resources>
     <string name="app_name">DogBook</string>
-    <string name="no_name">No Name</string>
+    <string name="no_name">Nameless</string>
     <string name="bred">are bred for</string>
     <string name="breed_group">their breed group are</string>
     <string name="life">and their life expectancy is</string>
+    <string name="like">ME GUSTA</string>
+    <string name="nolike">NO ME GUSTA</string>
+    <string name="fav">ME ENCANTA</string>
+    <string name="show_us_the_dog_image">show us the dog image</string>
+    <string name="no_like_json">no-like.json</string>
+    <string name="like_json">like.json</string>
+    <string name="fav_json">favorite.json</string>
+    <string name="no_information">There is no information for this dog</string>
 </resources>

@@ -1,15 +1,13 @@
 package com.omarrujo.dogbook.ui.activity
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -18,6 +16,7 @@ import com.omarrujo.dogbook.databinding.ActivityMainBinding
 import com.omarrujo.dogbook.utils.Constants
 import com.omarrujo.dogbook.viewmodel.DogBookViewModel
 import com.omarrujo.dogbook.viewmodel.DogBookViewModelFactory
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,12 +24,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit  var dogBookViewmodel: DogBookViewModel
     private var dX = 0f
     private var dY = 0f
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate( layoutInflater )
         setContentView(binding.root)
 
-        dogBookViewmodel = ViewModelProvider(this, DogBookViewModelFactory(applicationContext)).get(DogBookViewModel::class.java)
+        dogBookViewmodel = ViewModelProvider(this, DogBookViewModelFactory(applicationContext))[DogBookViewModel::class.java]
         binding.viewModel = dogBookViewmodel
         binding.lifecycleOwner = this
 
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val halfWidthThreshold = this.resources.displayMetrics.widthPixels / 2
-        val halfHeightThreshold = this.resources.displayMetrics.heightPixels / 2
+        val halfHeightThreshold = this.resources.displayMetrics.heightPixels / 3
         var movedToRight = false
         var movedToLeft = false
         var movedUp = false
@@ -71,42 +71,32 @@ class MainActivity : AppCompatActivity() {
                     if (newX > originalX) {
                         movedToRight = true
                         movedToLeft = false
+
                     } else if (newX < originalX) {
                         movedToLeft = true
                         movedToRight = false
+
                     } else {
                         movedToRight = false
                         movedToLeft = false
+
                     }
 
-                    if (newY < originalY) {
-                        movedUp = true
-                    } else {
-                        movedUp = false
-                    }
+                    movedUp = newY < originalY
                 }
                 MotionEvent.ACTION_UP -> {
                     val currentX = view.x
                     val currentY = view.y
-                    val distanceDraggedx = Math.abs(currentX - originalX)
-                    val distanceDraggedy = Math.abs(currentY - originalY)
+                    val distanceDraggedx = abs(currentX - originalX)
+                    val distanceDraggedy = abs(currentY - originalY)
 
                     if (movedToRight && distanceDraggedx > halfWidthThreshold) {
-                        binding.lottieAnimationView.visibility = View.VISIBLE
-                        binding.lottieAnimationView.playAnimation()
-
-                        // Define la duración en milisegundos (por ejemplo, 5 segundos)
-                        val duracionAnimacion = 5000
-
-                        // Programa una tarea para ocultar la animación después de la duración deseada
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            binding.lottieAnimationView.visibility = View.GONE
-                        }, duracionAnimacion.toLong())
+                        dogBookViewmodel.setAnimationFileName( getString(R.string.no_like_json) )
                     } else if (movedToLeft && distanceDraggedx > halfWidthThreshold  ) {
-
+                        dogBookViewmodel.setAnimationFileName( getString(R.string.like_json) )
                     }
                     else if (movedUp && distanceDraggedy > halfHeightThreshold) {
-
+                        dogBookViewmodel.setAnimationFileName( getString(R.string.fav_json) )
                     }
                     view.animate().x(originalX)
                     view.animate().y(originalY)
@@ -115,21 +105,23 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-
-
-//        dogBookViewmodel.dogsData.observe(this, Observer { dogData ->
-//            try {
-//                Glide.with(this)
-//                    .load(dogData[0].url)
-//                    .transition(DrawableTransitionOptions.withCrossFade())
-//                    .into(binding.ivDog)
-//            }catch  (e: Exception){
-//                Log.i("OML GLIDE",e.toString())
-//            }
-//        })
-
+        setImageDog()
         dogBookViewmodel.getInformationDog( Constants.API_KEY )
 
-
     }
+
+    private fun setImageDog(){
+        dogBookViewmodel.dogsData.observe(this) { dogData ->
+            try {
+                Glide.with(this)
+                    .load(dogData[0].url)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(binding.ivDog)
+            } catch (e: Exception) {
+                Log.i("Error Glide" , e.toString())
+            }
+        }
+    }
+
+
 }
